@@ -22,8 +22,13 @@ type Config struct {
 // setting up the new Server mux type with the routes within
 func (a *app) route() *chi.Mux {
 	mux := chi.NewMux()
+	// good middleware stack
+	// DOC: https://github.com/go-chi/chi
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
+	mux.Use(middleware.RequestID)
+	// set timeout for response and request
+	mux.Use(middleware.Timeout(time.Minute))
 	// group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {
 		r.Get("/", handler.Welcome)
