@@ -15,12 +15,12 @@ import (
 
 type app struct {
 	config Config
-	store  store.Storage
+	store  *store.Storage
 }
 
 type Config struct {
 	addr string
-	db   models.DBConfig
+	db   *models.DBConfig
 }
 
 // setting up the new Server mux type with the routes within

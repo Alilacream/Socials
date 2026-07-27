@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS citext;
 -- posts table format 
 CREATE TABLE IF NOT EXISTS posts (
   id SERIAL PRIMARY KEY,
@@ -6,5 +7,5 @@ CREATE TABLE IF NOT EXISTS posts (
   tags TEXT,
   user_id INT,
   CONSTRAINT fk_posts_users FOREIGN KEY (user_id) REFERENCES users(id)
-)
+);
 

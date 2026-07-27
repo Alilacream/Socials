@@ -1,4 +1,4 @@
-# Dev environement to run 
+# Dev environementc to run 
 dev: 
 	go run cmd/api/*go
 # show env of what i want
