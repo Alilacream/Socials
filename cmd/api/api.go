@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"alilacream/socialx/internal/handler"
+	"alilacream/socialx/internal/store"
+	"alilacream/socialx/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -13,10 +15,12 @@ import (
 
 type app struct {
 	config Config
+	store  store.Storage
 }
 
 type Config struct {
 	addr string
+	db   models.DBConfig
 }
 
 // setting up the new Server mux type with the routes within

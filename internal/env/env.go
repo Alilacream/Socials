@@ -6,10 +6,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GetVar(variable string) (string, error) {
+func GetVar(variable string) string {
 	err := godotenv.Load()
 	if err != nil {
-		return "", err
+		return ""
 	}
-	return os.Getenv(variable), nil
+	return os.Getenv(variable)
 }
