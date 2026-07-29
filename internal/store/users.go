@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
@@ -12,6 +13,7 @@ type UserStore struct {
 	db *sql.DB
 }
 
+// Create: UserStore method to create the new user provided in the params
 func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 	query := `INSERT INTO users (first_name,last_name, username, email, password)
 	VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at 
@@ -28,6 +30,22 @@ func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 		hashPass).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+// Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
+func (s *UserStore) CheckUser(ctx context.Context, user *models.User) error {
+	query := `SELECT username, password FROM users 
+	WHERE username = $1`
+	var UserCheck models.User
+	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(&UserCheck.Username, &UserCheck.Password)
+	// logically the row should return either a Invalid Query OR nothing
+	if err != nil {
+		return err
+	}
+	if check := lib.CheckPassword(UserCheck.Password, user.Password); !check {
+		return errors.New("invalid password")
 	}
 	return nil
 }

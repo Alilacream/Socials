@@ -22,3 +22,11 @@ func NewPQStorage(db *sql.DB) Storage {
 		Users: &UserStore{db},
 	}
 }
+
+type Handler struct {
+	storage *Storage
+}
+
+func NewHandler(storage *Storage) *Handler {
+	return new(Handler{storage: storage})
+}

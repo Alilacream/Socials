@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"alilacream/socialx/internal/handler"
 	"alilacream/socialx/internal/store"
+	"alilacream/socialx/internal/store/handlers"
 	"alilacream/socialx/models"
 
 	"github.com/go-chi/chi/v5"
@@ -35,7 +35,7 @@ func (a *app) route() *chi.Mux {
 	mux.Use(middleware.Timeout(time.Minute))
 	// group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {
-		r.Get("/", handler.Welcome)
+		r.Get("/", handlers.Welcome)
 		//		r.Get("/users", handler.CreateAndInviteUsers)
 	})
 
