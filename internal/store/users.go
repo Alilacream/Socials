@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
 )
 
@@ -12,13 +13,19 @@ type UserStore struct {
 }
 
 func (s *UserStore) Create(ctx context.Context, user *models.User) error {
-	query := `INSERT INTO users (Name, Email, Password)
-	VALUES ($1, $2, $3) RETURNING id, created_at 
+	query := `INSERT INTO users (first_name,last_name, username, email, password)
+	VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at 
 	`
-	err := s.db.QueryRowContext(ctx, query,
-		user.Name,
+	hashPass, err := lib.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	err = s.db.QueryRowContext(ctx, query,
+		user.FirstName,
+		user.LastName,
+		user.Username,
 		user.Email,
-		user.Password).Scan(&user.ID, &user.CreatedAt)
+		hashPass).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
 		return err
 	}
