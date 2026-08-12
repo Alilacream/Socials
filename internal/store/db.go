@@ -13,6 +13,7 @@ type Storage struct {
 	}
 	Users interface {
 		Create(ctx context.Context, user *models.User) error
+		Check(ctx context.Context, user *models.User) error
 	}
 }
 

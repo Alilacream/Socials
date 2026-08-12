@@ -1,2 +1,4 @@
 .env*
-/web/node_modules
+/tmp
+/bin
+node_modules/

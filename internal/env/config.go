@@ -14,6 +14,7 @@ type EnvConf struct {
 	MaxOpenConns int
 	MaxIdleConns int
 	MaxIdleTime  string
+	Secret       string
 }
 
 // ReturnAll rather than assingning every var and checking, let us just assign it and a func
@@ -34,5 +35,6 @@ func ReturnAll() *EnvConf {
 		MaxOpenConns: maxopen,
 		MaxIdleConns: maxidle,
 		MaxIdleTime:  GetVar("DB_MAX_IDLE_TIME"),
+		Secret:       GetVar("SECRET_KEY"),
 	}
 }
