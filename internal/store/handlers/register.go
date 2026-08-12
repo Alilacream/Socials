@@ -3,13 +3,13 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"alilacream/socialx/internal/env"
 	"alilacream/socialx/internal/store"
-	"alilacream/socialx/lib"
 	"alilacream/socialx/logs"
 	"alilacream/socialx/models"
 
@@ -21,46 +21,47 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
+		var user models.User
+		secret := env.GetVar("SECRET_KEY")
+		// parsing the form to check if this format is goofy
 		if err := r.ParseForm(); err != nil {
 			logs.DisplayErr(w, "ParseForm")
 			return
 		}
 
-		// HACK: need to hash ofc
-		hashPass, err := lib.HashPassword(r.FormValue("password"))
-		if err != nil {
-			logs.DisplayErr(w, "BadRequest")
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			http.Error(w, "Couldn't Process Request Body", http.StatusBadRequest)
 			return
 		}
 
-		formValues := &models.User{
-			FirstName: r.FormValue("first_name"),
-			LastName:  r.FormValue("last_name"),
-			Username:  r.FormValue("username"),
-			Email:     r.FormValue("email"),
-			Password:  hashPass,
-		}
-
-		log.Println("value:", formValues)
 		// using context
 		// PERF:WHAT IS context ?
 		ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 		defer cancel()
 		// relativaly i should just passed the Users and call it a day, need to update the interfaces
-		if err := store.Users.Create(ctx, formValues); err != nil {
-			logs.Errors(w, "Userregister")
+		if err := store.Users.Create(ctx, &user); err != nil {
+			log.Println("Error of creation: ", err.Error())
+			http.Error(w, "User Already Exists: ", http.StatusNotAcceptable)
 			return
 		}
+		fmt.Printf("First Name: %s\n", user.FirstName) // "amine"
+		fmt.Printf("Last Name: %s\n", user.LastName)   // "Dinani"
+		fmt.Printf("Username: %s\n", user.Username)    // "zoughnanimol_ri7a"
+		fmt.Printf("Email: %s\n", user.Email)          // "dsoughnani@gmail.com"
+		fmt.Printf("Password: %s\n", user.Password)    // "Hola123321"
+
 		// creating a map claim
 		claims := jwt.MapClaims{
-			"sub":  formValues.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
-			"user": formValues.Username,
-			"exp":  time.Now().Add(24 * time.Hour).Unix(),
-			"iat":  time.Now().Unix(),
+			"sub":       user.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
+			"firstname": user.FirstName,
+			"lastname":  user.LastName,
+			"user":      user.Username,
+			"exp":       time.Now().Add(24 * time.Hour).Unix(),
+			"iat":       time.Now().Unix(),
 		}
 		// Token Strucutre Creation
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenStr, err := token.SignedString(env.GetVar("SECRET_KEY"))
+		tokenStr, err := token.SignedString(secret)
 		if err != nil {
 			http.Error(w, "Couldn't generate Token", http.StatusInternalServerError)
 			return
@@ -70,8 +71,6 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			Name:     "jwt_token",
 			Value:    tokenStr,
 			HttpOnly: true,
-			Secure:   false, // we're only in local dev
-
 		})
 		// for debugging
 		w.WriteHeader(http.StatusOK)

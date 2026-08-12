@@ -16,8 +16,8 @@ type User struct {
 	LastName  string `json:"last_name"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
-	Password  string `json:"-"`
-	CreatedAt string `json:"created_at"`
+	Password  string `json:"password"` // was not being read in the postman, now it is
+	CreatedAt string
 }
 
 type DBConfig struct {

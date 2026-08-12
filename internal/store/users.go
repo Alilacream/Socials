@@ -34,18 +34,18 @@ func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 }
 
 // Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
-func (s *UserStore) Check(ctx context.Context, user *models.User) (*models.User, error) {
+func (s *UserStore) Check(ctx context.Context, user *models.User) error {
 	query := `SELECT id ,username, password FROM users 
 	WHERE username = $1`
 	var UserCheck models.User
 	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(&UserCheck.ID, &UserCheck.Username, &UserCheck.Password)
 	// logically the row should return either a Invalid Query OR nothing
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// checking if the password is valid or not (NOTE:it takes the HASHED one, and the user inputed one )
 	if check := lib.CheckPassword(UserCheck.Password, user.Password); !check {
-		return nil, errors.New("invalid password")
+		return errors.New("invalid password")
 	}
-	return &UserCheck, nil
+	return nil
 }

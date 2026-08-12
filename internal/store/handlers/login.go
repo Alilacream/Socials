@@ -18,18 +18,18 @@ import (
 func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		var user models.User
 		if err := r.ParseForm(); err != nil {
 			logs.DisplayErr(w, "Parse")
 			return
 		}
-		LoggedUser := &models.User{
-			Username: r.FormValue("username"),
-			Password: r.FormValue("password"),
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			http.Error(w, "Couldn't Process the Json Format", http.StatusInternalServerError)
 		}
 		ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 		defer cancel()
 		// Checking the only the Login user if he exists
-		User, err := store.Users.Check(ctx, LoggedUser)
+		err := store.Users.Check(ctx, &user)
 		if err != nil {
 			logs.DisplayErr(w, "Userlogin")
 			return
@@ -37,10 +37,10 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 		// the format is containing the payload, the header is the first param, containing the method
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"sub":       User.ID, // Use id, to be unique
-			"firstname": User.FirstName,
-			"lastname":  User.LastName,
-			"user":      User.Username,
+			"sub":       user.ID, // Use id, to be unique
+			"firstname": user.FirstName,
+			"lastname":  user.LastName,
+			"user":      user.Username,
 			"exp":       time.Now().Add(24 * time.Hour).Unix(),
 			"iat":       time.Now().Unix(),
 		})
