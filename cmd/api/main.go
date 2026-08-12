@@ -34,5 +34,5 @@ func main() {
 			addr: allVars.Port,
 		},
 	}
-	log.Fatal(app.run(app.route()))
+	log.Fatal(app.run(app.route(&store)))
 }

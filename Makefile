@@ -1,6 +1,14 @@
 # Dev environementc to run 
-dev: 
-	go run cmd/api/*go
+dev:  
+	@echo "Starting Dev Environement for testing..."
+	@make -j2 backend frontend	
+	
+frontend:
+	@echo "📦 Starting React frontend..."
+	cd web && npm run dev 
+backend:	
+	@echo "⚙️  Starting Go backend with Air..."
+	air
 # show env of what i want
 showenv:
 	cat env | grep "$(WANTED)"

@@ -13,6 +13,7 @@ type Storage struct {
 	}
 	Users interface {
 		Create(ctx context.Context, user *models.User) error
+		Check(ctx context.Context, user *models.User) (*models.User, error)
 	}
 }
 
@@ -21,12 +22,4 @@ func NewPQStorage(db *sql.DB) Storage {
 		Posts: &PostStore{db},
 		Users: &UserStore{db},
 	}
-}
-
-type Handler struct {
-	storage *Storage
-}
-
-func NewHandler(storage *Storage) *Handler {
-	return new(Handler{storage: storage})
 }

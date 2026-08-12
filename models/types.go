@@ -19,6 +19,7 @@ type User struct {
 	Password  string `json:"-"`
 	CreatedAt string `json:"created_at"`
 }
+
 type DBConfig struct {
 	DSN                string
 	MaxOpenConnections int

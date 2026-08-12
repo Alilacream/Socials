@@ -24,7 +24,7 @@ type Config struct {
 }
 
 // setting up the new Server mux type with the routes within
-func (a *app) route() *chi.Mux {
+func (a *app) route(s *store.Storage) *chi.Mux {
 	mux := chi.NewMux()
 	// good middleware stack
 	// DOC: https://github.com/go-chi/chi
@@ -36,6 +36,9 @@ func (a *app) route() *chi.Mux {
 	// group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {
 		r.Get("/", handlers.Welcome)
+		r.Post("/register", handlers.Register(s))
+		r.Post("/login", handlers.Login(s))
+
 		//		r.Get("/users", handler.CreateAndInviteUsers)
 	})
 
