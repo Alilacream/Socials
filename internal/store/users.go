@@ -13,7 +13,7 @@ type UserStore struct {
 	db *sql.DB
 }
 
-// Create: UserStore method to create the new user provided in the params
+// Create UserStore method to create the new user provided in the params
 func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 	query := `INSERT INTO users (first_name,last_name, username, email, password)
 	VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at `
@@ -33,8 +33,8 @@ func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 	return nil
 }
 
-// Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
-func (s *UserStore) Check(ctx context.Context, user *models.User) error {
+// Check_User_Exist Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
+func (s *UserStore) Check_User_Exist(ctx context.Context, user *models.User) error {
 	query := `SELECT id ,username, password FROM users 
 	WHERE username = $1`
 	var UserCheck models.User

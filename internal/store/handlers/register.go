@@ -27,7 +27,7 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			logs.DisplayErr(w, "ParseForm")
 			return
 		}
-
+		// if we couldn't process the format given
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			http.Error(w, "Couldn't Process Request Body", http.StatusBadRequest)
 			return
@@ -45,17 +45,18 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 		}
 		// creating a map claim
 		claims := jwt.MapClaims{
-			"sub":       user.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
-			"firstname": user.FirstName,
-			"lastname":  user.LastName,
-			"user":      user.Username,
-			"exp":       time.Now().Add(24 * time.Hour).Unix(),
-			"iat":       time.Now().Unix(),
+			"sub":                user.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
+			"preffered_username": user.Username,
+			"email":              user.Email,
+			"exp":                time.Now().Add(24 * time.Hour).Unix(),
+			"iat":                time.Now().Unix(),
 		}
 		// Token Strucutre Creation
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenStr, err := token.SignedString(secret)
+		tokenStr, err := token.SignedString([]byte(secret)) // Hmac expects an array of byte not a string
 		if err != nil {
+
+			log.Println("the Error of Auth", err.Error())
 			http.Error(w, "Couldn't generate Token", http.StatusInternalServerError)
 			return
 		}
