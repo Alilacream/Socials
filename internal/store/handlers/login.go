@@ -60,7 +60,7 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 		// last thing to show
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
-			"server": "Welcome Back " + User.Username,
+			"server": "Welcome Back " + user.Username,
 		})
 	}
 }

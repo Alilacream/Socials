@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -44,12 +43,6 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "User Already Exists: ", http.StatusNotAcceptable)
 			return
 		}
-		fmt.Printf("First Name: %s\n", user.FirstName) // "amine"
-		fmt.Printf("Last Name: %s\n", user.LastName)   // "Dinani"
-		fmt.Printf("Username: %s\n", user.Username)    // "zoughnanimol_ri7a"
-		fmt.Printf("Email: %s\n", user.Email)          // "dsoughnani@gmail.com"
-		fmt.Printf("Password: %s\n", user.Password)    // "Hola123321"
-
 		// creating a map claim
 		claims := jwt.MapClaims{
 			"sub":       user.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
