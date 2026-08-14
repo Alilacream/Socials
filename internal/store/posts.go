@@ -32,3 +32,29 @@ func (s *PostStore) Create(ctx context.Context, post *models.Post) error {
 	}
 	return nil
 }
+
+func (s *PostStore) Search(ctx context.Context, post *models.Post) error {
+	query := `SELECT title, content, tags FROM posts WHERE title=$1 OR content=$2 OR tags=$3`
+	err := s.db.QueryRowContext(ctx, query, post.Content, post.Title, post.Tags).Scan(
+		&post.ID,
+		&post.CreatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *PostStore) Search_User_Posts(ctx context.Context, user *models.User, post *models.Post) error {
+	query := `SELECT * FROM posts 
+			LEFT JOIN users ON users.id = posts.user_id
+			WHERE username = $1 
+	`
+	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(
+		&post,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

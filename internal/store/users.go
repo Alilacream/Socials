@@ -36,7 +36,7 @@ func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 // Check_User_Exist Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
 func (s *UserStore) Check_User_Exist(ctx context.Context, user *models.User) error {
 	query := `SELECT id ,username, password FROM users 
-	WHERE username = $1`
+	WHERE username = %$1%`
 	var UserCheck models.User
 	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(&UserCheck.ID, &UserCheck.Username, &UserCheck.Password)
 	// logically the row should return either a Invalid Query OR nothing
