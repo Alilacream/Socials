@@ -3,16 +3,15 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
-	"alilacream/socialx/internal/env"
 	"alilacream/socialx/internal/store"
+	"alilacream/socialx/lib"
 	"alilacream/socialx/logs"
 	"alilacream/socialx/models"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // Registering a new user with the help of UserStore Method (Create)
@@ -21,7 +20,6 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 		w.Header().Set("Content-Type", "application/json")
 
 		var user models.User
-		secret := env.GetVar("SECRET_KEY")
 		// parsing the form to check if this format is goofy
 		if err := r.ParseForm(); err != nil {
 			logs.DisplayErr(w, "ParseForm")
@@ -43,19 +41,8 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, "User Already Exists: ", http.StatusNotAcceptable)
 			return
 		}
-		// creating a map claim
-		claims := jwt.MapClaims{
-			"sub":                user.ID, // NOTE:even tho id was not grepped from the body.	it's value is scanned in the create user Method
-			"preffered_username": user.Username,
-			"email":              user.Email,
-			"exp":                time.Now().Add(24 * time.Hour).Unix(),
-			"iat":                time.Now().Unix(),
-		}
-		// Token Strucutre Creation
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenStr, err := token.SignedString([]byte(secret)) // Hmac expects an array of byte not a string
+		tokenStr, err := lib.GenerateJWT(store.JWTSecret, &user)
 		if err != nil {
-
 			log.Println("the Error of Auth", err.Error())
 			http.Error(w, "Couldn't generate Token", http.StatusInternalServerError)
 			return
@@ -66,6 +53,9 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			Value:    tokenStr,
 			HttpOnly: true,
 		})
+		// set it in the header to not manually copy it
+		bearer := fmt.Sprintf("Bearer %s", tokenStr)
+		w.Header().Set("Authorization", bearer)
 		// for debugging
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"message": "New User Registered"})

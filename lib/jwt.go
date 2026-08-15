@@ -1,42 +1,27 @@
 package lib
 
 import (
-	"context"
-	"fmt"
-	"net/http"
-	"strings"
+	"time"
+
+	"alilacream/socialx/models"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func JWTAuth(secretKey string) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				http.Error(w, "Authorization header required", http.StatusUnauthorized)
-				return
-			}
-
-			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-			// Parse and validate token using github.com/golang-jwt/jwt/v4
-			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-				}
-				return []byte(secretKey), nil
-			})
-
-			if err != nil || !token.Valid {
-				http.Error(w, "Invalid token", http.StatusUnauthorized)
-				return
-			}
-
-			// Add claims to context
-			claims := token.Claims.(jwt.MapClaims)
-			ctx := context.WithValue(r.Context(), "user", claims)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
+// GenerateJWT creating a new token, to minimize code in login and register
+func GenerateJWT(secret string, user *models.User) (string, error) {
+	// the format is containing the payload, the header is the first param, containing the method
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub":                user.ID, // Use id, to be unique
+		"preferred_username": user.Username,
+		"email":              user.Email,
+		"exp":                time.Now().Add(24 * time.Hour).Unix(),
+		"iat":                time.Now().Unix(),
+	})
+	// the token is of type token, we need it's string value, NOTE: Hmac Meth needs the secret in a slice byte type
+	tokenStr, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
 	}
+	return tokenStr, nil
 }

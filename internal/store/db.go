@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"alilacream/socialx/internal/env"
 	"alilacream/socialx/models"
 )
 
@@ -16,11 +17,13 @@ type Storage struct {
 		Create(ctx context.Context, user *models.User) error
 		Check_User_Exist(ctx context.Context, user *models.User) error
 	}
+	JWTSecret string // since we'll be passing jwt secret a lot let just set the call of getVar() in main only
 }
 
 func NewPQStorage(db *sql.DB) Storage {
 	return Storage{
-		Posts: &PostStore{db},
-		Users: &UserStore{db},
+		Posts:     &PostStore{db},
+		Users:     &UserStore{db},
+		JWTSecret: env.GetVar("SECRET_KEY"),
 	}
 }

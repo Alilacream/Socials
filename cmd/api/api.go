@@ -7,7 +7,10 @@ import (
 
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/internal/store/handlers"
+	"alilacream/socialx/internal/store/handlers/social"
 	"alilacream/socialx/models"
+
+	"alilacream/socialx/lib/jwtauth"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -26,20 +29,23 @@ type Config struct {
 // setting up the new Server mux type with the routes within
 func (a *app) route(s *store.Storage) *chi.Mux {
 	mux := chi.NewMux()
-	// good middleware stack
+	// good middleware stackPlain
 	// DOC: https://github.com/go-chi/chi
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
 	mux.Use(middleware.RequestID)
 	// set timeout for response and request
 	mux.Use(middleware.Timeout(time.Minute))
-	// group all users in the v1, much more practical
-	mux.Route("/v1", func(r chi.Router) {
+	// protected routes, verifying in the jwt is valid or not
+	mux.Group(func(r chi.Router) {
+		r.Use(jwtauth.JWTAuth(s.JWTSecret))
 		r.Get("/", handlers.Welcome)
+		r.Post("/post", social.Post(s))
+	})
+	// pub routes, group all users in the v1, much more practical
+	mux.Route("/v1", func(r chi.Router) {
 		r.Post("/register", handlers.Register(s))
 		r.Post("/login", handlers.Login(s))
-
-		//		r.Get("/users", handler.CreateAndInviteUsers)
 	})
 
 	return mux
