@@ -10,10 +10,9 @@ import (
 	"alilacream/socialx/internal/store/handlers/social"
 	"alilacream/socialx/models"
 
-	"alilacream/socialx/lib/jwtauth"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth/v5"
 )
 
 type app struct {
@@ -28,6 +27,7 @@ type Config struct {
 
 // setting up the new Server mux type with the routes within
 func (a *app) route(s *store.Storage) *chi.Mux {
+	tokenAuth := jwtauth.New("HS256", []byte(s.JWTSecret), nil)
 	mux := chi.NewMux()
 	// good middleware stackPlain
 	// DOC: https://github.com/go-chi/chi
@@ -38,7 +38,10 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 	mux.Use(middleware.Timeout(time.Minute))
 	// protected routes, verifying in the jwt is valid or not
 	mux.Group(func(r chi.Router) {
-		r.Use(jwtauth.JWTAuth(s.JWTSecret))
+		// using the jwtauth middleware
+		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(jwtauth.Authenticator(tokenAuth))
+
 		r.Get("/", handlers.Welcome)
 		r.Post("/post", social.Post(s))
 	})

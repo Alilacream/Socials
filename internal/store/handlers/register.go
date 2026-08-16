@@ -14,7 +14,7 @@ import (
 	"alilacream/socialx/models"
 )
 
-// Registering a new user with the help of UserStore Method (Create)
+// Register  new user with the help of UserStore Method (Create)
 func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -25,9 +25,14 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			logs.DisplayErr(w, "ParseForm")
 			return
 		}
-		// if we couldn't process the format given
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			http.Error(w, "Couldn't Process Request Body", http.StatusBadRequest)
+		json.NewDecoder(r.Body).Decode(&user)
+		// if the user input is invalid we return an http error
+		if err := lib.ParseEmail(user.Email); err != nil {
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+		if err := lib.ParseUsername(user.Username); err != nil {
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
 			return
 		}
 
