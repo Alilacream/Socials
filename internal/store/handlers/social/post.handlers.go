@@ -16,6 +16,16 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 		var post models.Post
 
 		w.Header().Set("Content-Type", "application/json")
+		// ✅ DEBUG: Check what's in context
+		ctx := r.Context()
+
+		// Check if jwtauth keys exist
+		tokenVal := ctx.Value(jwtauth.TokenCtxKey)
+		errVal := ctx.Value(jwtauth.ErrorCtxKey)
+
+		log.Printf("🔍 Context values:")
+		log.Printf("   TokenCtxKey: %v (type: %T)", tokenVal, tokenVal)
+		log.Printf("   ErrorCtxKey: %v", errVal)
 
 		_, claims, err := jwtauth.FromContext(r.Context())
 		if err != nil {
@@ -23,9 +33,12 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-
+		// BUG: identified bug, returning id 0
+		// also the claim is returning an empty map
 		userID, ok := claims["sub"].(float64)
+		log.Println("the claim ", claims)
 		if !ok || userID == 0 {
+			log.Println("the user id: ", userID)
 			http.Error(w, "Invalid user ID", http.StatusUnauthorized)
 			return
 		}

@@ -8,6 +8,7 @@ import (
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/internal/store/handlers"
 	"alilacream/socialx/internal/store/handlers/social"
+	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
 
 	"github.com/go-chi/chi/v5"
@@ -40,7 +41,7 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 
 	mux.Group(func(r chi.Router) {
 		// using the jwtauth middleware
-		//	r.Use(lib.DebugMiddleware)
+		r.Use(lib.DebugMiddleware)
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
 

@@ -59,6 +59,7 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			Value:    tokenStr,
 			HttpOnly: true,
 			Path:     "/",
+			MaxAge:   86400,
 		})
 
 		w.WriteHeader(http.StatusOK)

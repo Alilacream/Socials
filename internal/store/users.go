@@ -49,7 +49,7 @@ func (s *UserStore) Check_User_Exist(ctx context.Context, user *models.User) err
 		return err
 	}
 	// checking if the password is valid or not (NOTE:it takes the HASHED one, and the user inputed one )
-	if check := lib.CheckPassword(UserCheck.Password, user.Password); !check {
+	if ok := lib.CheckPassword(UserCheck.Password, user.Password); !ok {
 		return errors.New("invalid password")
 	}
 	return nil
