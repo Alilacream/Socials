@@ -17,8 +17,6 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		log.Println(r.Context())
-
 		_, claims, err := jwtauth.FromContext(r.Context())
 		if err != nil {
 			log.Println(err.Error())
@@ -28,7 +26,6 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 		userID, ok := claims["sub"].(float64)
 		if !ok || userID == 0 {
-			log.Println("user id: ", userID)
 			http.Error(w, "Invalid user ID", http.StatusUnauthorized)
 			return
 		}

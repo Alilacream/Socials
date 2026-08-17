@@ -1,14 +1,19 @@
 package helpers
 
 import (
-	"strings"
 	"unicode"
 
 	"github.com/forPelevin/gomoji"
 )
 
-func HasUnwantedChar(s string) bool {
-	return len(s) == 0 || strings.Contains(s, "@gmail.com") || hasSymbol(s) || gomoji.ContainsEmoji(s)
+func HasUnwantedChar(category, s string) bool {
+	if category == "username" {
+		return len(s) != 0 && !hasSymbol(s) && !gomoji.ContainsEmoji(s)
+	} else if category == "email" {
+		return len(s) != 0 && !hasSymbol(s) && !gomoji.ContainsEmoji(s) // PERF:&& strings.Contains(s, "@gmail.com") inlogical a 3chiri
+	}
+	// as if i passed something else entirely
+	return true
 }
 
 func hasSymbol(str string) bool {

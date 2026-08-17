@@ -37,8 +37,10 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 	// set timeout for response and request
 	mux.Use(middleware.Timeout(time.Minute))
 	// protected routes, verifying in the jwt is valid or not
+
 	mux.Group(func(r chi.Router) {
 		// using the jwtauth middleware
+		//	r.Use(lib.DebugMiddleware)
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
 
@@ -50,7 +52,11 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 		r.Post("/register", handlers.Register(s))
 		r.Post("/login", handlers.Login(s))
 	})
-
+	mux.Route("/health", func(r chi.Router) {
+		r.Get("/ok", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("i'm hardcoded bro"))
+		})
+	})
 	return mux
 }
 

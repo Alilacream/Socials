@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -31,12 +30,14 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			http.Error(w, err.Error(), http.StatusNotAcceptable)
 			return
 		}
+
+		// if the email input is invalid we return an http error
+		// HACK: need to add the @... testcase with valid domains ofc
 		if err := lib.ParseUsername(user.Username); err != nil {
 			http.Error(w, err.Error(), http.StatusNotAcceptable)
 			return
 		}
 
-		// using context
 		// PERF:WHAT IS context ?
 		ctx, cancel := context.WithTimeout(r.Context(), 15*time.Second)
 		defer cancel()
@@ -54,14 +55,12 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 		}
 		// set it in the browser
 		http.SetCookie(w, &http.Cookie{
-			Name:     "jwt_token",
+			Name:     "jwt",
 			Value:    tokenStr,
 			HttpOnly: true,
+			Path:     "/",
 		})
-		// set it in the header to not manually copy it
-		bearer := fmt.Sprintf("Bearer %s", tokenStr)
-		w.Header().Set("Authorization", bearer)
-		// for debugging
+
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"message": "New User Registered"})
 	}

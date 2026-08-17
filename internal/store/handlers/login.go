@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -20,7 +19,7 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 		var user models.User
 		err := r.ParseForm()
-		if err != nil {
+		if err != nil || r.Body == nil {
 			http.Error(w, "Couldn't parse the body Request Sent", http.StatusBadRequest)
 			return
 		}
@@ -36,21 +35,20 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		log.Println("User id is being created: ", user.ID)
+		// generating the string token user
 		tokenStr, err := lib.GenerateJWT(store.JWTSecret, &user)
 		if err != nil {
-			log.Println("the Error of Auth", err.Error())
 			http.Error(w, "Couldn't generate Token", http.StatusInternalServerError)
 		}
 
 		// save the jwt token as a cookie.
 		http.SetCookie(w, &http.Cookie{
-			Name:     "jwt_token",
+			Name:     "jwt",
 			Value:    tokenStr,
 			HttpOnly: true,
-			Secure:   false, // we're only in local dev
+			Path:     "/", // <- determines where the cookie is sent, / for all
 		})
-		// set it in the header to not manually copy it
-		w.Header().Set("Authorization", fmt.Sprintf("Bearer %s", tokenStr))
 		// all good
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
