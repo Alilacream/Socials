@@ -35,16 +35,21 @@ func (s *UserStore) Create(ctx context.Context, user *models.User) error {
 
 // Check_User_Exist Checking the user if he exists aswell as checking the passwword within,make it valuable for our login handler
 func (s *UserStore) Check_User_Exist(ctx context.Context, user *models.User) error {
-	query := `SELECT id ,username, password FROM users 
-	WHERE username = $1`
+	query := `SELECT id ,username, email, password  FROM users 
+	WHERE username = $1` // 'are the string quotation for psql'
 	var UserCheck models.User
-	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(&UserCheck.ID, &UserCheck.Username, &UserCheck.Password)
+	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(
+		&user.ID, // HACK:getting data that are is not being displayed from login json input
+		&UserCheck.Username,
+		&user.Email, // &same thing
+		&UserCheck.Password,
+	)
 	// logically the row should return either a Invalid Query OR nothing
 	if err != nil {
 		return err
 	}
 	// checking if the password is valid or not (NOTE:it takes the HASHED one, and the user inputed one )
-	if check := lib.CheckPassword(UserCheck.Password, user.Password); !check {
+	if ok := lib.CheckPassword(UserCheck.Password, user.Password); !ok {
 		return errors.New("invalid password")
 	}
 	return nil

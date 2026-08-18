@@ -7,10 +7,13 @@ import (
 
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/internal/store/handlers"
+	"alilacream/socialx/internal/store/handlers/social"
+	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth/v5"
 )
 
 type app struct {
@@ -25,23 +28,36 @@ type Config struct {
 
 // setting up the new Server mux type with the routes within
 func (a *app) route(s *store.Storage) *chi.Mux {
+	tokenAuth := jwtauth.New("HS256", []byte(s.JWTSecret), nil)
 	mux := chi.NewMux()
-	// good middleware stack
+	// good middleware stackPlain
 	// DOC: https://github.com/go-chi/chi
 	mux.Use(middleware.Logger)
 	mux.Use(middleware.Recoverer)
 	mux.Use(middleware.RequestID)
 	// set timeout for response and request
 	mux.Use(middleware.Timeout(time.Minute))
-	// group all users in the v1, much more practical
-	mux.Route("/v1", func(r chi.Router) {
+	// protected routes, verifying in the jwt is valid or not
+
+	mux.Group(func(r chi.Router) {
+		// using the jwtauth middleware
+		r.Use(lib.DebugMiddleware)
+		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(jwtauth.Authenticator(tokenAuth))
+
 		r.Get("/", handlers.Welcome)
+		r.Post("/post", social.Post(s))
+	})
+	// pub routes, group all users in the v1, much more practical
+	mux.Route("/v1", func(r chi.Router) {
 		r.Post("/register", handlers.Register(s))
 		r.Post("/login", handlers.Login(s))
-
-		//		r.Get("/users", handler.CreateAndInviteUsers)
 	})
-
+	mux.Route("/health", func(r chi.Router) {
+		r.Get("/ok", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("i'm hardcoded bro"))
+		})
+	})
 	return mux
 }
 
