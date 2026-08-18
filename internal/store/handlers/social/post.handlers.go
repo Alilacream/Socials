@@ -6,9 +6,8 @@ import (
 	"net/http"
 
 	"alilacream/socialx/internal/store"
+	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
-
-	"github.com/go-chi/jwtauth/v5"
 )
 
 func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
@@ -17,32 +16,13 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		// ✅ DEBUG: Check what's in context
-		ctx := r.Context()
 
 		// Check if jwtauth keys exist
-		tokenVal := ctx.Value(jwtauth.TokenCtxKey)
-		errVal := ctx.Value(jwtauth.ErrorCtxKey)
-
-		log.Printf("🔍 Context values:")
-		log.Printf("   TokenCtxKey: %v (type: %T)", tokenVal, tokenVal)
-		log.Printf("   ErrorCtxKey: %v", errVal)
-
-		_, claims, err := jwtauth.FromContext(r.Context())
+		userID, err := lib.GetUserIDFromCookie(store.JWTSecret, r)
 		if err != nil {
-			log.Println(err.Error())
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			http.Error(w, "Couldn't get the User id from the Cookie", http.StatusInternalServerError)
 			return
 		}
-		// BUG: identified bug, returning id 0
-		// also the claim is returning an empty map
-		userID, ok := claims["sub"].(float64)
-		log.Println("the claim ", claims)
-		if !ok || userID == 0 {
-			log.Println("the user id: ", userID)
-			http.Error(w, "Invalid user ID", http.StatusUnauthorized)
-			return
-		}
-
 		err = r.ParseForm()
 		if err != nil || r.Body == nil {
 			http.Error(w, "Couldn't Parse the request given", http.StatusBadRequest)
