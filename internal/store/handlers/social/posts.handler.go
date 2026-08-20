@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +58,22 @@ func FindPost(s *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 		var post models.Post
 
 		w.Header().Set("Content-Type", "application/json")
-		err := r.ParseForm()
-		if err != nil || r.Body == nil {
-			http.Error(w, "Couldn't Parse the request given", http.StatusBadRequest)
+		postIDStr := chi.URLParam(r, "postID")
+		// FIX: need to change with a valid helper func
+		if postIDStr == "" {
+			http.Error(w, "Invalid Post Id", http.StatusBadRequest)
+			return
 		}
-		json.NewDecoder(r.Body).Decode(&post)
+		log.Println("post id ", postIDStr)
+		// converting into int
+		postID, err := strconv.Atoi(postIDStr)
+		if err != nil {
+			http.Error(w, "Post ID isn't a number", http.StatusBadRequest)
+			return
+		}
+		post.ID = int64(postID)
 		if err := s.Posts.Search(r.Context(), &post); err != nil {
+			log.Println("Db error: ", err.Error())
 			http.Error(w, "Couldn't find the post", http.StatusNotFound)
 			return
 		}

@@ -8,7 +8,6 @@ import (
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/internal/store/handlers"
 	"alilacream/socialx/internal/store/handlers/social"
-	"alilacream/socialx/lib"
 	"alilacream/socialx/models"
 
 	"github.com/go-chi/chi/v5"
@@ -41,12 +40,12 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 
 	mux.Group(func(r chi.Router) {
 		// using the jwtauth middleware
-		r.Use(lib.DebugMiddleware)
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
 
 		r.Get("/", handlers.Welcome)
 		r.Post("/post", social.Post(s))
+		r.Get("/posts/{postID}", social.FindPost(s))
 	})
 	// pub routes, group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {

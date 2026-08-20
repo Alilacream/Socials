@@ -34,9 +34,12 @@ func (s *PostStore) Create(ctx context.Context, post *models.Post) error {
 }
 
 func (s *PostStore) Search(ctx context.Context, post *models.Post) error {
-	query := `SELECT title, content, tags FROM posts WHERE title=$1 OR content=$2 OR tags=$3`
-	err := s.db.QueryRowContext(ctx, query, post.Content, post.Title, post.Tags).Scan(
-		&post.ID,
+	// pq.Array is a builtin function in postgres lib of pq. the name is self explanotory fn.
+	query := `SELECT title, content, tags, created_at  FROM posts WHERE id = $1`
+	err := s.db.QueryRowContext(ctx, query, post.ID).Scan(
+		&post.Title,
+		&post.Content,
+		pq.Array(&post.Tags),
 		&post.CreatedAt,
 	)
 	if err != nil {
