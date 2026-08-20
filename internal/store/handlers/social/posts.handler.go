@@ -32,21 +32,21 @@ func Post(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		json.NewDecoder(r.Body).Decode(&post)
-		// no empty fk refrence
+
 		post.UserID = int64(userID)
-		log.Println("POSTED: ", post)
 		if len(post.Content) < 30 {
 			http.Error(w, "The content needs to have at least 30 characters", http.StatusNotAcceptable)
 			return
 		}
+
 		err = store.Posts.Create(r.Context(), &post)
 		if err != nil {
 			log.Println("here is why", err.Error())
 			http.Error(w, "Couldn't store the post given", http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{
 			"success": "launched a new post",
 		})
@@ -77,6 +77,8 @@ func FindPost(s *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Couldn't find the post", http.StatusNotFound)
 			return
 		}
+
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]models.Post{
 			"Found it": post,
 		})

@@ -54,3 +54,20 @@ func (s *UserStore) Check_User_Exist(ctx context.Context, user *models.User) err
 	}
 	return nil
 }
+
+func (s *UserStore) Search(ctx context.Context, user *models.User) error {
+	query := `SELECT id ,first_name, last_name, email, created_at FROM users 
+	WHERE username = $1` // 'are the string quotation for psql'
+	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -15,6 +15,8 @@ type Storage struct {
 	}
 	Users interface {
 		Create(ctx context.Context, user *models.User) error
+		Search(ctx context.Context, user *models.User) error
+		// NOTE: this one is utilized for loginv1 handler
 		Check_User_Exist(ctx context.Context, user *models.User) error
 	}
 	JWTSecret string // since we'll be passing jwt secret a lot let just set the call of getVar() in main only

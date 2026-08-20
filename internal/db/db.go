@@ -31,7 +31,6 @@ func New(dbConf *models.DBConfig) (*sql.DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := db.PingContext(ctx); err != nil {
-		log.Println(err.Error())
 		return nil, err
 	}
 
