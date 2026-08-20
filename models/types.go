@@ -10,6 +10,7 @@ type Post struct {
 	UpdatedAt string   `json:"updated"`
 }
 
+// TODO:  need to migrate to string UUID
 type User struct {
 	ID        int64  `json:"id"`
 	FirstName string `json:"first_name"`
