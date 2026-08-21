@@ -48,16 +48,23 @@ func (s *PostStore) Search(ctx context.Context, post *models.Post) error {
 	return nil
 }
 
-func (s *PostStore) Search_User_Posts(ctx context.Context, user *models.User, post *models.Post) error {
+func (s *PostStore) Search_User_Posts(ctx context.Context, username string, posts []models.Post) error {
 	query := `SELECT * FROM posts 
 			LEFT JOIN users ON users.id = posts.user_id
 			WHERE username = $1 
 	`
-	err := s.db.QueryRowContext(ctx, query, user.Username).Scan(
-		&post,
-	)
+	// what happens when there are multiple posts
+	rows, err := s.db.QueryContext(ctx, query, username)
 	if err != nil {
 		return err
+	}
+	for rows.Next() {
+		var post models.Post
+		err := rows.Scan(&post)
+		if err != nil {
+			return err
+		}
+		posts = append(posts, post)
 	}
 	return nil
 }
