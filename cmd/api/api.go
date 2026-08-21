@@ -47,6 +47,7 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 		r.Post("/post", social.Post(s))
 		r.Get("/posts/{postID}", social.FindPost(s))
 		r.Get("/users/{username}", social.FindUser(s))
+		r.Get("/users/{username}/posts", social.Find_UserPosts(s))
 	})
 	// pub routes, group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {

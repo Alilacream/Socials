@@ -60,7 +60,7 @@ func (s *PostStore) Search_User_Posts(ctx context.Context, username string, post
 	}
 	for rows.Next() {
 		var post models.Post
-		err := rows.Scan(&post)
+		err := rows.Scan(&post.ID, &post.Title, &post.Content, pq.Array(&post.Tags), &post.UserID, &post.CreatedAt, &post.UpdatedAt)
 		if err != nil {
 			return err
 		}

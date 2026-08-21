@@ -87,16 +87,21 @@ func FindPost(s *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 
 func Find_UserPosts(s *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var post []models.Post
+		var posts []models.Post
 		w.Header().Set("Content-Type", "application/json")
 		err := r.ParseForm()
 		if err != nil || r.Body == nil {
 			http.Error(w, "Couldn't Parse the request given", http.StatusBadRequest)
 		}
 		username := chi.URLParam(r, "username")
-		if err := s.Posts.Search_User_Posts(r.Context(), username, post); err != nil {
+		if err := s.Posts.Search_User_Posts(r.Context(), username, posts); err != nil {
 			http.Error(w, "User hasn't been found or he doesn't have post", http.StatusNotFound)
 			return
 		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string][]models.Post{
+			"all posts": posts,
+		})
 	}
 }

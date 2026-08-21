@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS posts (
   title VARCHAR(30),
   content TEXT,
   tags TEXT,
-  user_id INT,
+  user_id INT, 
   CONSTRAINT fk_posts_users FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
