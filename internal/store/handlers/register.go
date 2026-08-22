@@ -58,7 +58,7 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 			Name:     "jwt",
 			Value:    tokenStr,
 			HttpOnly: true,
-			Path:     "/",
+			Path:     "/api",
 			MaxAge:   86400,
 		})
 

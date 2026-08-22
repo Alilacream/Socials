@@ -48,7 +48,7 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 			Name:     "jwt",
 			Value:    tokenStr,
 			HttpOnly: true,
-			Path:     "/", // <- determines where the cookie is sent, / for all
+			Path:     "/api", // <- determines where the cookie is sent, / for all
 			MaxAge:   86400,
 		})
 		// all good

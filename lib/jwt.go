@@ -57,7 +57,7 @@ func GetUserIDFromCookie(secret string, r *http.Request) (int64, error) {
 	if !ok {
 		return -1, errors.New("Couldn't parse the claim Token")
 	}
-	userID, err := strconv.Atoi(claims.RegisteredClaims.Subject)
+	userID, err := strconv.Atoi(claims.Subject)
 	if err != nil {
 		return -1, err
 	}
