@@ -36,7 +36,6 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Println("User id is being created: ", user.ID)
 		// generating the string token user
 		tokenStr, err := lib.GenerateJWT(store.JWTSecret, &user)
 		if err != nil {

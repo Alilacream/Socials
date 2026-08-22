@@ -9,7 +9,6 @@ import (
 
 	"alilacream/socialx/internal/store"
 	"alilacream/socialx/lib"
-	"alilacream/socialx/logs"
 	"alilacream/socialx/models"
 )
 
@@ -21,7 +20,7 @@ func Register(store *store.Storage) func(w http.ResponseWriter, r *http.Request)
 		var user models.User
 		// parsing the form to check if this format is goofy
 		if err := r.ParseForm(); err != nil {
-			logs.DisplayErr(w, "ParseForm")
+			http.Error(w, "Bad json request format", http.StatusBadRequest)
 			return
 		}
 		json.NewDecoder(r.Body).Decode(&user)

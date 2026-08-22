@@ -38,10 +38,13 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 	mux.Use(middleware.Timeout(time.Minute))
 	// protected routes, verifying in the jwt is valid or not
 
-	// Source - https://stackoverflow.com/a/57682227
-	// Posted by Santiago, modified by community. See post 'Timeline' for change history
-	// Retrieved 2026-08-22, License - CC BY-SA 4.0
-
+	// pub routes, group all users in the v1, much more practical
+	mux.Route("/v1", func(r chi.Router) {
+		r.Post("/register", handlers.Register(s))
+		r.Post("/login", handlers.Login(s))
+		r.Post("/logout", handlers.Logout(s))
+	})
+	// private routes
 	mux.Route("/api", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
@@ -53,12 +56,6 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 		r.Get("/users/{username}/posts", social.Find_UserPosts(s))
 	})
 
-	// pub routes, group all users in the v1, much more practical
-	mux.Route("/v1", func(r chi.Router) {
-		r.Post("/register", handlers.Register(s))
-		r.Post("/login", handlers.Login(s))
-		r.Post("/logout", handlers.Logout(s))
-	})
 	return mux
 }
 
