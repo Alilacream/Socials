@@ -1,4 +1,4 @@
-.counter {
+.button  {
   font-size: 16px;
   padding: 5px 10px;
   border-radius: 5px;
@@ -16,7 +16,14 @@
     outline-offset: 2px;
   }
 }
-
+.hlt {
+  color: #6F10C4; 
+}
+.sign-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 .hero {
   position: relative;
 
