@@ -1,33 +1,50 @@
-import { useState } from 'react'
+import { useState, Activity } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
+
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  const [hide, setHide] = useState(false)
   return (
     <>
       <section id="center">
         <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={reactLogo} className="framework" alt="React logo" />
+          <img src={heroImg} className="base" width="170" height="179" alt="" />
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
+          <h1>Socia<span className='hlt'>lx</span></h1>
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            test my <code>Api</code>
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        <div className='sign-buttons'>
+          {/* wahed l ayba t3lmtha f fun facts about react */}
+
+          <Activity mode={hide ? "hidden" : "visible"}>
+            <button
+              type="button"
+              className="button"
+              onClick={() => setCount((count) => count + 1)}
+            >
+              Count is {count}
+            </button>
+          </Activity>
+          <button
+            type="button"
+            className='button'
+            onClick={() => setHide((prev) => !prev)}
+          >Hide :3</button>
+        </div>
+
+        <div className='sign-buttons'>
+          <button type="submit" className='button'>Sign In</button>
+          <button type="submit" className='button'>Sign Up</button>
+        </div>
       </section>
 
       <div className="ticks"></div>
@@ -58,11 +75,11 @@ function App() {
           <svg className="icon" role="presentation" aria-hidden="true">
             <use href="/icons.svg#social-icon"></use>
           </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
+          <h2>Connect with me</h2>
+          <p>Join the Vite community or Contact me for collaberative projects :P</p>
           <ul>
             <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
+              <a href="https://github.com/Alilacream" target="_blank">
                 <svg
                   className="button-icon"
                   role="presentation"
@@ -74,40 +91,7 @@ function App() {
               </a>
             </li>
             <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
+
             </li>
           </ul>
         </div>
