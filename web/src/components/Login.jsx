@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("localhost:8080/v1/login", {
+    const response = await fetch("http://localhost:8080/v1/login", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
