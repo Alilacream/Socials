@@ -26,7 +26,7 @@ type Config struct {
 }
 
 // setting up the new Server mux type with the routes within
-func (a *app) route(s *store.Storage) *chi.Mux {
+func (a *app) route(s *store.Storage) http.Handler {
 	tokenAuth := jwtauth.New("HS256", []byte(s.JWTSecret), nil)
 	mux := chi.NewMux()
 	// good middleware stackPlain
@@ -36,7 +36,6 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 	mux.Use(middleware.RequestID)
 	// set timeout for response and request
 	mux.Use(middleware.Timeout(time.Minute))
-	// protected routes, verifying in the jwt is valid or not
 
 	// pub routes, group all users in the v1, much more practical
 	mux.Route("/v1", func(r chi.Router) {
@@ -44,7 +43,12 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 		r.Post("/login", handlers.Login(s))
 		r.Post("/logout", handlers.Logout(s))
 	})
-	// private routes
+	mux.Route("/health", func(r chi.Router) {
+		r.Get("/ok", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("hello there"))
+		})
+	})
+	// protected routes, verifying in the jwt is valid or not
 	mux.Route("/api", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator(tokenAuth))
@@ -56,11 +60,11 @@ func (a *app) route(s *store.Storage) *chi.Mux {
 		r.Get("/users/{username}/posts", social.Find_UserPosts(s))
 	})
 
-	return mux
+	return a.rateLimit(mux, 2, 10)
 }
 
 // running the application, core method for serving
-func (a *app) run(mux *chi.Mux) error {
+func (a *app) run(mux http.Handler) error {
 	srv := &http.Server{
 		Addr:    a.config.addr,
 		Handler: mux,

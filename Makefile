@@ -1,13 +1,13 @@
 # Dev environementc to run 
 dev:  
 	@echo "Starting Dev Environement for testing..."
-	@make -j2 backend frontend	
+	@make -j2 b frontend	
 	
 frontend:
-	@echo "📦 Starting React frontend..."
+	@echo "Starting React frontend..."
 	cd web && npm run dev 
-backend:	
-	@echo "⚙️  Starting Go backend with Air..."
+b:
+	@echo "Starting Go Server"
 	air
 # show env of what i want
 showenv:
