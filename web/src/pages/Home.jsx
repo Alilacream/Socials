@@ -1,9 +1,10 @@
 import { useState, Activity } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import reactLogo from '../assets/react.svg'
+import viteLogo from '../assets/vite.svg'
+import heroImg from '../assets/hero.png'
 
 import '../App.css'
+import { Link } from 'react-router-dom'
 
 function Home() {
   const [count, setCount] = useState(0)
@@ -42,8 +43,12 @@ function Home() {
         </div>
 
         <div className='sign-buttons'>
-          <button type="submit" className='button'>Sign In</button>
-          <button type="submit" className='button'>Sign Up</button>
+          <Link to={"/signup"}>
+            <button type="submit" className='button'>Sign Up</button>
+          </Link>
+          <Link to={"/signin"}>
+            <button type="submit" className='button'>Sign In</button>
+          </Link>
         </div>
       </section>
 

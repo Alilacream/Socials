@@ -2,7 +2,7 @@ import { useState } from "react"
 
 export default function LoginPage() {
   const [data, setData] = useState({ username: "", password: "" })
-  const [responed, setResponed] = useState("")
+
   const handleOnChange = (event) => {
     const { name, value } = event.target
     setData(prev => ({
@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("localhost:8080/v1/login", {
+    const response = await fetch("http://localhost:8080/v1/login", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export default function LoginPage() {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = response.json();
-    setResponed(result)
+    console.log(result)
   }
   return (
     <form onSubmit={handleSubmit}>
