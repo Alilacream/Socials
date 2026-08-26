@@ -38,8 +38,10 @@ func (app *app) rateLimit(next *chi.Mux, rps, burst int) http.Handler {
 		// getting the real ip
 		ip := realip.FromRequest(r)
 		if _, ok := clients[ip]; !ok {
-			clients[ip].limiter = rate.NewLimiter(rate.Limit(rps), burst)
-			clients[ip].lastSeen = time.Now()
+			clients[ip] = &client{
+				limiter:  rate.NewLimiter(rate.Limit(rps), burst),
+				lastSeen: time.Now(),
+			}
 		}
 		if !clients[ip].limiter.Allow() {
 			app.appRateLimiterExceeded(w, r)

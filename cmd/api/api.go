@@ -60,7 +60,7 @@ func (a *app) route(s *store.Storage) http.Handler {
 		r.Get("/users/{username}/posts", social.Find_UserPosts(s))
 	})
 
-	return a.rateLimit(mux, 2, 10)
+	return a.CORSPolicy(a.rateLimit(mux, 2, 10))
 }
 
 // running the application, core method for serving

@@ -43,12 +43,11 @@ function Home() {
         </div>
 
         <div className='sign-buttons'>
-          <Link to="/signin">
-            <button type="button" className='button'>Sign In</button>
-          </Link>
-
-          <Link to="/signup">
+          <Link to={"/signup"}>
             <button type="submit" className='button'>Sign Up</button>
+          </Link>
+          <Link to={"/signin"}>
+            <button type="submit" className='button'>Sign In</button>
           </Link>
         </div>
       </section>
