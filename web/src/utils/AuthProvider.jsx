@@ -6,9 +6,11 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user')
+    return savedUser ? JSON.parse(savedUser) : null
+  });
   const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
   const login = async (username, password) => {
     try {
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       console.log('Login response:', data); // Debug
       setUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user))
       navigate("/", { replace: true })
       return data.user;
     } catch (error) {
@@ -50,31 +53,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const checkAuth = async () => {
-    try {
-      const response = fetch(`${backend_url}/api/me`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json()
-        console.log('User found:', data.user);
-        setUser(data.user);
-      } else {
-        console.log('No user found');
-        setUser(null);
-      }
-
-    } catch (err) {
-      console.log("No user lah ysahel l omor")
-      setUser(null)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, checkAuth }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
