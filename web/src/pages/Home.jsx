@@ -1,26 +1,21 @@
 import { useState, Activity } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../assets/vite.svg'
-import heroImg from '../assets/hero.png'
-
 import '../App.css'
 import { Link } from 'react-router-dom'
-
-function Home(props) {
+import { Hero, Doc } from '../components/Hero'
+import { useAuth } from '../utils/AuthProvider'
+function Home() {
   const [count, setCount] = useState(0)
   const [hide, setHide] = useState(false)
+  const { user } = useAuth()
+  console.log(user)
   return (
     <>
       <section id="center">
-        <div className="hero">
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+        <Hero />
         <div>
-          <h1>Welcome to Socia<span className='hlt'>lx  {props.user ? props.user.username : ""}</span></h1>
+          <h1>Welcome to Socia<span className='hlt'>lx  {user && user.username}</span></h1>
           <p>
-            test my <code>Api</code>
+            Test Out <code>API</code>
           </p>
         </div>
         <div className='sign-buttons'>
@@ -46,6 +41,7 @@ function Home(props) {
           <Link to={"/register"}>
             <button type="submit" className='button'>Sign Up</button>
           </Link>
+
           <Link to={"/login"}>
             <button type="submit" className='button'>Sign In</button>
           </Link>
@@ -61,20 +57,7 @@ function Home(props) {
           </svg>
           <h2>Documentation</h2>
           <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          <Doc />
         </div>
         <div id="social">
           <svg className="icon" role="presentation" aria-hidden="true">

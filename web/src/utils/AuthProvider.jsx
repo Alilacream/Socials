@@ -1,13 +1,15 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { backend_url } from './BackendCall';
 
+import { useNavigate } from 'react-router-dom';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // FIX 1: Change endpoint from /logout to /login
+  const navigate = useNavigate();
   const login = async (username, password) => {
     try {
       console.log('Attempting login...'); // Debug
@@ -26,9 +28,12 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       console.log('Login response:', data); // Debug
       setUser(data.user);
+      navigate("/", { replace: true })
       return data.user;
     } catch (error) {
       console.error('Login error:', error);
+
+      navigate("/", { replace: true })
       throw error;
     }
   };
@@ -45,32 +50,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // FIX 2: Add the missing checkAuth function
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${backend_url}/health`, {
+      const response = fetch(`${backend_url}/api/me`, {
         method: 'GET',
         credentials: 'include',
       });
-
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json()
+        console.log('User found:', data.user);
         setUser(data.user);
       } else {
+        console.log('No user found');
         setUser(null);
       }
-    } catch (error) {
-      console.error('Auth check error:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // Optional: Check auth when the app loads
-  useEffect(() => {
-    checkAuth();
-  }, []);
+    } catch (err) {
+      console.log("No user lah ysahel l omor")
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, checkAuth }}>
