@@ -12,7 +12,8 @@ type Storage struct {
 	Posts interface {
 		Create(ctx context.Context, post *models.Post) error
 		Search(ctx context.Context, post *models.Post) error
-		Search_User_Posts(ctx context.Context, username string, post []models.Post) error
+		Search_User_Posts(ctx context.Context, username string, posts *[]models.Post) error
+		AllPosts(ctx context.Context, posts *[]models.Post) error
 	}
 	Users interface {
 		Create(ctx context.Context, user *models.User) error

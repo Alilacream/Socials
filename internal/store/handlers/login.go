@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -53,8 +52,8 @@ func Login(store *store.Storage) func(w http.ResponseWriter, r *http.Request) {
 		// all good
 		w.WriteHeader(http.StatusOK)
 
-		json.NewEncoder(w).Encode(map[string]string{
-			"server": fmt.Sprintf("Welcome back %s, you're id is %d", user.Username, user.ID),
+		json.NewEncoder(w).Encode(map[string]*models.User{
+			"user": &user,
 		})
 	}
 }

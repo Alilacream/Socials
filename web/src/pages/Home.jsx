@@ -6,7 +6,7 @@ import heroImg from '../assets/hero.png'
 import '../App.css'
 import { Link } from 'react-router-dom'
 
-function Home() {
+function Home(props) {
   const [count, setCount] = useState(0)
   const [hide, setHide] = useState(false)
   return (
@@ -18,7 +18,7 @@ function Home() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Socia<span className='hlt'>lx</span></h1>
+          <h1>Welcome to Socia<span className='hlt'>lx  {props.user ? props.user.username : ""}</span></h1>
           <p>
             test my <code>Api</code>
           </p>
@@ -43,10 +43,10 @@ function Home() {
         </div>
 
         <div className='sign-buttons'>
-          <Link to={"/signup"}>
+          <Link to={"/register"}>
             <button type="submit" className='button'>Sign Up</button>
           </Link>
-          <Link to={"/signin"}>
+          <Link to={"/login"}>
             <button type="submit" className='button'>Sign In</button>
           </Link>
         </div>

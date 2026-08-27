@@ -56,6 +56,7 @@ func (a *app) route(s *store.Storage) http.Handler {
 		r.Get("/", handlers.Welcome)
 		r.Post("/post", social.Post(s))
 		r.Get("/posts/{postID}", social.FindPost(s))
+		r.Get("/posts", social.GetAllPosts(s))
 		r.Get("/users/{username}", social.FindUser(s))
 		r.Get("/users/{username}/posts", social.Find_UserPosts(s))
 	})

@@ -1,22 +1,21 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { BrowserRouter, createBrowserRouter, Route, RouterProvider, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Register from './components/Register.jsx'
 import Login from './components/Login.jsx'
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/signup',
-    element: <Register />,
-  },
-  {
-    path: "/signin",
-    element: <Login />
-  },
-])
+import { AuthProvider } from './utils/AuthProvider.jsx'
+
+
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  )
 }

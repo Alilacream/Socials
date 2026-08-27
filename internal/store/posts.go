@@ -48,7 +48,7 @@ func (s *PostStore) Search(ctx context.Context, post *models.Post) error {
 	return nil
 }
 
-func (s *PostStore) Search_User_Posts(ctx context.Context, username string, posts []models.Post) error {
+func (s *PostStore) Search_User_Posts(ctx context.Context, username string, posts *[]models.Post) error {
 	query := `SELECT * FROM posts 
 			LEFT JOIN users ON users.id = posts.user_id
 			WHERE username = $1 
@@ -64,7 +64,25 @@ func (s *PostStore) Search_User_Posts(ctx context.Context, username string, post
 		if err != nil {
 			return err
 		}
-		posts = append(posts, post)
+		*posts = append(*posts, post)
+	}
+	return nil
+}
+
+func (s *PostStore) AllPosts(ctx context.Context, posts *[]models.Post) error {
+	// pq.Array is a builtin function in postgres lib of pq. the name is self explanotory fn.
+	query := `SELECT id, title, content, tags, created_at, updated_at  FROM posts`
+	rows, err := s.db.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var post models.Post
+		err := rows.Scan(&post.ID, &post.Title, &post.Content, pq.Array(&post.Tags), &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			return err
+		}
+		*posts = append(*posts, post)
 	}
 	return nil
 }
