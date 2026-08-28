@@ -37,15 +37,23 @@ function Home() {
           >Hide :3</button>
         </div>
 
-        <div className='sign-buttons'>
-          <Link to={"/register"}>
-            <button type="submit" className='button'>Sign Up</button>
-          </Link>
+        {user ?
+          <div className='post-button'>
+            <Link to={"/posts"}>
+              <button type="submit" className='button'>See Posts</button>
+            </Link>
+          </div>
+          :
+          <div className='sign-buttons'>
+            <Link to={"/register"}>
+              <button type="submit" className='button'>Sign Up</button>
+            </Link>
 
-          <Link to={"/login"}>
-            <button type="submit" className='button'>Sign In</button>
-          </Link>
-        </div>
+            <Link to={"/login"}>
+              <button type="submit" className='button'>Sign In</button>
+            </Link>
+          </div>
+        }
       </section>
 
       <div className="ticks"></div>

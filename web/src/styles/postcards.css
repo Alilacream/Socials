@@ -1,0 +1,51 @@
+/* PostCard Container */
+.postcard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.postcard:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* Title */
+.postcard h1 {
+  font-size: 1.3rem;
+  margin: 0 0 10px 0;
+  color: #1a1a2e;
+}
+
+/* Content */
+.post-content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #444;
+  margin: 0 0 16px 0;
+}
+
+/* Tags Container */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+/* Individual Tag */
+.tags-container .tag {
+  background: #f0f2f5;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  color: #555;
+  transition: background 0.2s ease;
+}
+
+.tags-container .tag:hover {
+  background: #e0e2e5;
+}
