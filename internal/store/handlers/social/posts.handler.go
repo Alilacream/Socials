@@ -121,7 +121,7 @@ func GetAllPosts(s *store.Storage) func(w http.ResponseWriter, r *http.Request) 
 		log.Println(posts)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string][]models.Post{
-			"all posts": posts,
+			"posts": posts,
 		})
 	}
 }
